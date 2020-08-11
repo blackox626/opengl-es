@@ -16,10 +16,23 @@ typedef struct {
     GLKVector2 textureCoord; // 纹理坐标 (U, V) 【0，1】
 } SenceVertex;
 
-@interface ViewController ()
+@interface ViewController () {
+    GLfloat changeValue;
+    CFAbsoluteTime lastTime;
+    GLuint texture1ID;
+    GLuint texture2ID;
+    
+    GLuint vertexBuffer;
+    
+    GLuint positionSlot;
+    GLuint texture1Slot;
+    GLuint texture2Slot;
+    GLuint textureCoordsSlot;
+}
 
 @property (nonatomic, assign) SenceVertex *vertices; // 顶点数组
 @property (nonatomic, strong) EAGLContext *context;
+@property (nonatomic,strong) Shader *shader;
 
 @end
 
@@ -32,19 +45,37 @@ typedef struct {
     [self initVertices];
     [self initContext];
     
+    
     // 创建一个展示纹理的层
     CAEAGLLayer *layer = [[CAEAGLLayer alloc] init];
     layer.frame = CGRectMake(0, 100, self.view.frame.size.width, self.view.frame.size.width * 1.5);
     layer.contentsScale = [[UIScreen mainScreen] scale];  // 设置缩放比例，不设置的话，纹理会失真
+    layer.backgroundColor = [UIColor whiteColor].CGColor;
     
     [self.view.layer addSublayer:layer];
     
     // 绑定纹理输出的层
     [self bindRenderLayer:layer];
-    [self render];
+    
+    [self initShader];
+    [self createTexture];
+    [self bind];
+//    int i = 0;
+//    while (i< 1000000) {
+        [self render];
+//        i++;
+//
+//        sleep(2);
+//    }
+    
+    // 删除顶点缓存
+    glDeleteBuffers(1, &vertexBuffer);
+    vertexBuffer = 0;
 }
 
 - (void)initVertices {
+    lastTime = CFAbsoluteTimeGetCurrent();
+    
     // 创建顶点数组
     self.vertices = malloc(sizeof(SenceVertex) * 4); // 4 个顶点
     
@@ -59,11 +90,7 @@ typedef struct {
     [EAGLContext setCurrentContext:self.context];
 }
 
-- (void)render {
-    // 读取纹理
-    GLuint texture1ID = [TextureUtil createTextureWithImageName:@"sample.png"];
-    GLuint texture2ID = [TextureUtil createTextureWithImageName:@"awesomeface.png"];
-    
+- (void)initShader {
     // 设置视口尺寸
     glViewport(0, 0, self.drawableWidth, self.drawableHeight);
     
@@ -71,28 +98,26 @@ typedef struct {
     Shader *shader = [[Shader alloc] init:@"glsl"];
     [shader use];
     
-//    GLuint program = [self programWithShaderName:@"glsl"]; // glsl.vsh & glsl.fsh
-//    glUseProgram(program);
-    
-    GLuint program = shader.programId;
+    self.shader = shader;
+}
+
+- (void)createTexture {
+    // 读取纹理
+    texture1ID = [TextureUtil createTextureWithImageName:@"sample.png"];
+    texture2ID = [TextureUtil createTextureWithImageName:@"awesomeface.png"];
+}
+
+- (void)bind {
+    GLuint program = self.shader.programId;
     
     // 获取 shader 中的参数，然后传数据进去
-    GLuint positionSlot = glGetAttribLocation(program, "Position");
-    GLuint texture1Slot = glGetUniformLocation(program, "Texture1");  // 注意 Uniform 类型的获取方式
-    GLuint texture2Slot = glGetUniformLocation(program, "Texture2");
-    GLuint textureCoordsSlot = glGetAttribLocation(program, "TextureCoords");
-    
-    // 将纹理 ID 传给着色器程序
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, texture1ID);
-    glUniform1i(texture1Slot, 0);  // 将 textureSlot 赋值为 0，而 0 与 GL_TEXTURE0 对应，这里如果写 1，上面也要改成 GL_TEXTURE1
-    
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, texture2ID);
-    glUniform1i(texture2Slot, 1);  // 将 textureSlot 赋值为 0，而 0 与 GL_TEXTURE0 对应，这里如果写 1，上面也要改成 GL_TEXTURE1
+    positionSlot = glGetAttribLocation(program, "Position");
+    texture1Slot = glGetUniformLocation(program, "Texture1");  // 注意 Uniform 类型的获取方式
+    texture2Slot = glGetUniformLocation(program, "Texture2");
+    textureCoordsSlot = glGetAttribLocation(program, "TextureCoords");
     
     // 创建顶点缓存
-    GLuint vertexBuffer;
+    
     glGenBuffers(1, &vertexBuffer);
     glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
     GLsizeiptr bufferSizeBytes = sizeof(SenceVertex) * 4;
@@ -105,6 +130,48 @@ typedef struct {
     // 设置纹理数据
     glEnableVertexAttribArray(textureCoordsSlot);
     glVertexAttribPointer(textureCoordsSlot, 2, GL_FLOAT, GL_FALSE, sizeof(SenceVertex), NULL + offsetof(SenceVertex, textureCoord));
+}
+
+- (void)render {
+    GLuint program = self.shader.programId;
+    
+    
+    CFAbsoluteTime startTime = CFAbsoluteTimeGetCurrent();
+
+    changeValue += startTime-lastTime;
+
+    GLfloat elValue = sinf(changeValue);
+    
+    //当调用glClear函数，清除颜色缓冲之后，整个颜色缓冲都会被填充为glClearColor里所设置的颜色。在这里，我们将屏幕设置白色。
+    glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
+    
+    
+    // 将纹理 ID 传给着色器程序
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, texture1ID);
+    glUniform1i(texture1Slot, 0);  // 将 textureSlot 赋值为 0，而 0 与 GL_TEXTURE0 对应，这里如果写 1，上面也要改成 GL_TEXTURE1
+    
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, texture2ID);
+    glUniform1i(texture2Slot, 1);  // 将 textureSlot 赋值为 0，而 0 与 GL_TEXTURE0 对应，这里如果写 1，上面也要改成 GL_TEXTURE1
+    
+    
+//    GLKMatrix4 transformMatrix;
+//    // 初始化为单位矩阵，不对图形产生任何变换
+//    transformMatrix = GLKMatrix4Identity;
+//    transformMatrix = GLKMatrix4MakeTranslation(1.0, 0.0, 0.0);
+    
+    // 旋转
+    GLKMatrix4 rotationMatrix = GLKMatrix4MakeRotation(elValue,0.0, 0.0, 1.0);
+
+    // 缩放
+    GLKMatrix4 scaleMatrix = GLKMatrix4MakeScale(elValue, elValue, 1.0);
+    
+    GLKMatrix4 transformMatrix = GLKMatrix4Multiply(rotationMatrix , scaleMatrix);
+//    GLKMatrix4 transformMatrix = GLKMatrix4Identity;
+    GLuint transformUniformLocation = glGetUniformLocation(program, "transform");
+    glUniformMatrix4fv(transformUniformLocation, 1, GL_FALSE, transformMatrix.m);
     
     // 开始绘制
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
@@ -112,9 +179,8 @@ typedef struct {
     // 将绑定的渲染缓存呈现到屏幕上
     [self.context presentRenderbuffer:GL_RENDERBUFFER];
     
-    // 删除顶点缓存
-    glDeleteBuffers(1, &vertexBuffer);
-    vertexBuffer = 0;
+    
+    lastTime = startTime;
 }
 
 // 绑定图像要输出的 layer
