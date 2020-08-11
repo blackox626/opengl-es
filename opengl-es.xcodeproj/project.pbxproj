@@ -18,6 +18,7 @@
 		BFBC582024E28C58004678F0 /* glsl.fsh in Resources */ = {isa = PBXBuildFile; fileRef = BFBC581F24E28C58004678F0 /* glsl.fsh */; };
 		BFBC582224E28EF2004678F0 /* sample.png in Resources */ = {isa = PBXBuildFile; fileRef = BFBC582124E28EF2004678F0 /* sample.png */; };
 		BFBC582624E2948E004678F0 /* Shader.m in Sources */ = {isa = PBXBuildFile; fileRef = BFBC582524E2948E004678F0 /* Shader.m */; };
+		BFBC582924E2BC26004678F0 /* awesomeface.png in Resources */ = {isa = PBXBuildFile; fileRef = BFBC582824E2BC26004678F0 /* awesomeface.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -38,6 +39,7 @@
 		BFBC582124E28EF2004678F0 /* sample.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = sample.png; sourceTree = "<group>"; };
 		BFBC582424E2948E004678F0 /* Shader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Shader.h; sourceTree = "<group>"; };
 		BFBC582524E2948E004678F0 /* Shader.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Shader.m; sourceTree = "<group>"; };
+		BFBC582824E2BC26004678F0 /* awesomeface.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = awesomeface.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -70,6 +72,7 @@
 		BFBC580324E28757004678F0 /* opengl-es */ = {
 			isa = PBXGroup;
 			children = (
+				BFBC582A24E2BC3C004678F0 /* img */,
 				BFBC582724E29DD2004678F0 /* glsl */,
 				BFBC582324E29468004678F0 /* shader */,
 				BFBC580424E28757004678F0 /* AppDelegate.h */,
@@ -83,7 +86,6 @@
 				BFBC581224E2875A004678F0 /* LaunchScreen.storyboard */,
 				BFBC581524E2875A004678F0 /* Info.plist */,
 				BFBC581624E2875A004678F0 /* main.m */,
-				BFBC582124E28EF2004678F0 /* sample.png */,
 			);
 			path = "opengl-es";
 			sourceTree = "<group>";
@@ -104,6 +106,15 @@
 				BFBC581F24E28C58004678F0 /* glsl.fsh */,
 			);
 			path = glsl;
+			sourceTree = "<group>";
+		};
+		BFBC582A24E2BC3C004678F0 /* img */ = {
+			isa = PBXGroup;
+			children = (
+				BFBC582824E2BC26004678F0 /* awesomeface.png */,
+				BFBC582124E28EF2004678F0 /* sample.png */,
+			);
+			path = img;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -169,6 +180,7 @@
 				BFBC581124E2875A004678F0 /* Assets.xcassets in Resources */,
 				BFBC582024E28C58004678F0 /* glsl.fsh in Resources */,
 				BFBC580F24E28757004678F0 /* Main.storyboard in Resources */,
+				BFBC582924E2BC26004678F0 /* awesomeface.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

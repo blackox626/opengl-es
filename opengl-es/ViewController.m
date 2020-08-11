@@ -64,7 +64,11 @@ typedef struct {
     // 读取纹理
     NSString *imagePath = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"sample.png"];
     UIImage *image = [UIImage imageWithContentsOfFile:imagePath];
-    GLuint textureID = [self createTextureWithImage:image];
+    GLuint texture1ID = [self createTextureWithImage:image];
+    
+    imagePath = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"awesomeface.png"];
+    image = [UIImage imageWithContentsOfFile:imagePath];
+    GLuint texture2ID = [self createTextureWithImage:image];
     
     // 设置视口尺寸
     glViewport(0, 0, self.drawableWidth, self.drawableHeight);
@@ -81,15 +85,19 @@ typedef struct {
     
     // 获取 shader 中的参数，然后传数据进去
     GLuint positionSlot = glGetAttribLocation(program, "Position");
-    GLuint textureSlot = glGetUniformLocation(program, "Texture");  // 注意 Uniform 类型的获取方式
+    GLuint texture1Slot = glGetUniformLocation(program, "Texture1");  // 注意 Uniform 类型的获取方式
+    GLuint texture2Slot = glGetUniformLocation(program, "Texture2");
     GLuint textureCoordsSlot = glGetAttribLocation(program, "TextureCoords");
     GLuint colorSlot = glGetAttribLocation(program, "Color");
     
     // 将纹理 ID 传给着色器程序
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, textureID);
-    glUniform1i(textureSlot, 0);  // 将 textureSlot 赋值为 0，而 0 与 GL_TEXTURE0 对应，这里如果写 1，上面也要改成 GL_TEXTURE1
-    //[shader setInt:@"Texture" value:0];
+    glBindTexture(GL_TEXTURE_2D, texture1ID);
+    glUniform1i(texture1Slot, 0);  // 将 textureSlot 赋值为 0，而 0 与 GL_TEXTURE0 对应，这里如果写 1，上面也要改成 GL_TEXTURE1
+    
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, texture2ID);
+    glUniform1i(texture2Slot, 1);  // 将 textureSlot 赋值为 0，而 0 与 GL_TEXTURE0 对应，这里如果写 1，上面也要改成 GL_TEXTURE1
     
     // 创建顶点缓存
     GLuint vertexBuffer;
