@@ -33,6 +33,8 @@ typedef struct {
 @property (nonatomic, assign) SenceVertex *vertices; // 顶点数组
 @property (nonatomic, strong) EAGLContext *context;
 @property (nonatomic,strong) Shader *shader;
+@property (nonatomic, strong) CADisplayLink *displayLink;
+@property (nonatomic, assign) NSTimeInterval startTimeInterval; // 开始的时间戳
 
 @end
 
@@ -62,15 +64,22 @@ typedef struct {
     [self bind];
 //    int i = 0;
 //    while (i< 1000000) {
-        [self render];
+//        [self render];
 //        i++;
 //
 //        sleep(2);
 //    }
     
-    // 删除顶点缓存
-    glDeleteBuffers(1, &vertexBuffer);
-    vertexBuffer = 0;
+    
+    self.startTimeInterval = 0;
+    self.displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(render)];
+    [self.displayLink addToRunLoop:[NSRunLoop mainRunLoop]
+                           forMode:NSRunLoopCommonModes];
+
+    
+//    // 删除顶点缓存
+//    glDeleteBuffers(1, &vertexBuffer);
+//    vertexBuffer = 0;
 }
 
 - (void)initVertices {
@@ -138,7 +147,7 @@ typedef struct {
     
     CFAbsoluteTime startTime = CFAbsoluteTimeGetCurrent();
 
-    changeValue += startTime-lastTime;
+    changeValue += self.displayLink.timestamp - self.startTimeInterval;
 
     GLfloat elValue = sinf(changeValue);
     
