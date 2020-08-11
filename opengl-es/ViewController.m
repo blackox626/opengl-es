@@ -13,7 +13,6 @@
 
 typedef struct {
     GLKVector3 positionCoord; // 定点坐标 (X, Y, Z) 【-1.0，1.0】
-    GLKVector3 color; // 颜色 RGB
     GLKVector2 textureCoord; // 纹理坐标 (U, V) 【0，1】
 } SenceVertex;
 
@@ -49,10 +48,10 @@ typedef struct {
     // 创建顶点数组
     self.vertices = malloc(sizeof(SenceVertex) * 4); // 4 个顶点
     
-    self.vertices[0] = (SenceVertex){{-1, 1, 0},{1.0,0.0,0.0}, {0, 1}}; // 左上角
-    self.vertices[1] = (SenceVertex){{-1, -1, 0},{0.0,1.0,0.0}, {0, 0}}; // 左下角
-    self.vertices[2] = (SenceVertex){{1, 1, 0},{0.0,0.0,1.0}, {1, 1}}; // 右上角
-    self.vertices[3] = (SenceVertex){{1, -1, 0}, {1.0,1.0,0.0},{1, 0}}; // 右下角
+    self.vertices[0] = (SenceVertex){{-1, 1, 0}, {0, 1}}; // 左上角
+    self.vertices[1] = (SenceVertex){{-1, -1, 0}, {0, 0}}; // 左下角
+    self.vertices[2] = (SenceVertex){{1, 1, 0}, {1, 1}}; // 右上角
+    self.vertices[3] = (SenceVertex){{1, -1, 0},{1, 0}}; // 右下角
 }
 
 - (void)initContext {
@@ -82,7 +81,6 @@ typedef struct {
     GLuint texture1Slot = glGetUniformLocation(program, "Texture1");  // 注意 Uniform 类型的获取方式
     GLuint texture2Slot = glGetUniformLocation(program, "Texture2");
     GLuint textureCoordsSlot = glGetAttribLocation(program, "TextureCoords");
-    GLuint colorSlot = glGetAttribLocation(program, "Color");
     
     // 将纹理 ID 传给着色器程序
     glActiveTexture(GL_TEXTURE0);
@@ -107,9 +105,6 @@ typedef struct {
     // 设置纹理数据
     glEnableVertexAttribArray(textureCoordsSlot);
     glVertexAttribPointer(textureCoordsSlot, 2, GL_FLOAT, GL_FALSE, sizeof(SenceVertex), NULL + offsetof(SenceVertex, textureCoord));
-    
-    glEnableVertexAttribArray(colorSlot);
-    glVertexAttribPointer(colorSlot, 3, GL_FLOAT, GL_FALSE, sizeof(SenceVertex), NULL + offsetof(SenceVertex, color));
     
     // 开始绘制
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);

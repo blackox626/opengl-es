@@ -12,7 +12,6 @@ uniform sampler2D Texture1;
 uniform sampler2D Texture2;
 
 varying vec2 TextureCoordsVarying;
-varying vec3 OurColor;
 
 void main (void) {
     //vec4 mask = texture2D(Texture, TextureCoordsVarying);
