@@ -19,6 +19,7 @@
 		BFBC582224E28EF2004678F0 /* sample.png in Resources */ = {isa = PBXBuildFile; fileRef = BFBC582124E28EF2004678F0 /* sample.png */; };
 		BFBC582624E2948E004678F0 /* Shader.m in Sources */ = {isa = PBXBuildFile; fileRef = BFBC582524E2948E004678F0 /* Shader.m */; };
 		BFBC582924E2BC26004678F0 /* awesomeface.png in Resources */ = {isa = PBXBuildFile; fileRef = BFBC582824E2BC26004678F0 /* awesomeface.png */; };
+		BFBC582E24E2BE97004678F0 /* TextureUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = BFBC582D24E2BE97004678F0 /* TextureUtil.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -40,6 +41,8 @@
 		BFBC582424E2948E004678F0 /* Shader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Shader.h; sourceTree = "<group>"; };
 		BFBC582524E2948E004678F0 /* Shader.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Shader.m; sourceTree = "<group>"; };
 		BFBC582824E2BC26004678F0 /* awesomeface.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = awesomeface.png; sourceTree = "<group>"; };
+		BFBC582C24E2BE97004678F0 /* TextureUtil.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TextureUtil.h; sourceTree = "<group>"; };
+		BFBC582D24E2BE97004678F0 /* TextureUtil.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TextureUtil.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -72,6 +75,7 @@
 		BFBC580324E28757004678F0 /* opengl-es */ = {
 			isa = PBXGroup;
 			children = (
+				BFBC582B24E2BE58004678F0 /* texture */,
 				BFBC582A24E2BC3C004678F0 /* img */,
 				BFBC582724E29DD2004678F0 /* glsl */,
 				BFBC582324E29468004678F0 /* shader */,
@@ -115,6 +119,15 @@
 				BFBC582124E28EF2004678F0 /* sample.png */,
 			);
 			path = img;
+			sourceTree = "<group>";
+		};
+		BFBC582B24E2BE58004678F0 /* texture */ = {
+			isa = PBXGroup;
+			children = (
+				BFBC582C24E2BE97004678F0 /* TextureUtil.h */,
+				BFBC582D24E2BE97004678F0 /* TextureUtil.m */,
+			);
+			path = texture;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -192,6 +205,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				BFBC580C24E28757004678F0 /* ViewController.m in Sources */,
+				BFBC582E24E2BE97004678F0 /* TextureUtil.m in Sources */,
 				BFBC580624E28757004678F0 /* AppDelegate.m in Sources */,
 				BFBC581724E2875A004678F0 /* main.m in Sources */,
 				BFBC580924E28757004678F0 /* SceneDelegate.m in Sources */,
