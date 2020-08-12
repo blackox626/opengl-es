@@ -84,10 +84,10 @@ typedef struct {
     // 创建顶点数组
     self.vertices = malloc(sizeof(SenceVertex) * 4); // 4 个顶点
     
-    self.vertices[0] = (SenceVertex){{-1, 1, 0}, {0, 1}}; // 左上角
-    self.vertices[1] = (SenceVertex){{-1, -1, 0}, {0, 0}}; // 左下角
-    self.vertices[2] = (SenceVertex){{1, 1, 0}, {1, 1}}; // 右上角
-    self.vertices[3] = (SenceVertex){{1, -1, 0},{1, 0}}; // 右下角
+    self.vertices[0] = (SenceVertex){{-0.5, 0.5, 0}, {0, 1}}; // 左上角
+    self.vertices[1] = (SenceVertex){{-0.5, -0.5, 0}, {0, 0}}; // 左下角
+    self.vertices[2] = (SenceVertex){{0.5, 0.5, 0}, {1, 1}}; // 右上角
+    self.vertices[3] = (SenceVertex){{0.5, -0.5, 0},{1, 0}}; // 右下角
 }
 
 - (void)initContext {
@@ -164,16 +164,22 @@ typedef struct {
 //    transformMatrix = GLKMatrix4Identity;
 //    transformMatrix = GLKMatrix4MakeTranslation(1.0, 0.0, 0.0);
     
-    // 旋转
-    GLKMatrix4 rotationMatrix = GLKMatrix4MakeRotation(elValue,0.0, 0.0, 1.0);
-
-    // 缩放
-    GLKMatrix4 scaleMatrix = GLKMatrix4MakeScale(elValue, elValue, 1.0);
     
-    GLKMatrix4 transformMatrix = GLKMatrix4Multiply(rotationMatrix , scaleMatrix);
-//    GLKMatrix4 transformMatrix = GLKMatrix4Identity;
-    GLuint transformUniformLocation = glGetUniformLocation(program, "transform");
-    glUniformMatrix4fv(transformUniformLocation, 1, GL_FALSE, transformMatrix.m);
+    // model
+    GLKMatrix4 rotationMatrix = GLKMatrix4MakeXRotation(GLKMathDegreesToRadians(-65.0));
+    // view
+    GLKMatrix4 translationMatrix = GLKMatrix4MakeTranslation(0, 0, -3);
+    // projection
+    GLKMatrix4 perspectiveMatrix = GLKMatrix4MakePerspective(GLKMathDegreesToRadians(45.0), 2.0/3.0, 0.1, 100.0);
+        
+    GLuint modelUniformLocation = glGetUniformLocation(program, "model");
+    glUniformMatrix4fv(modelUniformLocation, 1, GL_FALSE, rotationMatrix.m);
+    
+    GLuint viewUniformLocation = glGetUniformLocation(program, "view");
+    glUniformMatrix4fv(viewUniformLocation, 1, GL_FALSE, translationMatrix.m);
+    
+    GLuint projectionUniformLocation = glGetUniformLocation(program, "projection");
+    glUniformMatrix4fv(projectionUniformLocation, 1, GL_FALSE, perspectiveMatrix.m);
     
     // 开始绘制
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
