@@ -226,7 +226,7 @@ typedef struct {
     GLfloat changeValue = self.displayLink.timestamp - self.startTimeInterval;
     
     // model
-//    GLKMatrix4 model = GLKMatrix4MakeRotation(changeValue*GLKMathDegreesToRadians(50.0),0.5,1.0,0.0);
+    GLKMatrix4 model = GLKMatrix4MakeRotation(changeValue*GLKMathDegreesToRadians(50.0),0.5,1.0,0.0);
 //    GLKMatrix4 model = GLKMatrix4Identity;
     // view
     GLKMatrix4 view = GLKMatrix4MakeTranslation(0, 0, -4);
@@ -235,8 +235,8 @@ typedef struct {
     GLKMatrix4 projection = GLKMatrix4MakePerspective(GLKMathDegreesToRadians(45.0), 2.0/3.0, 0.1, 100.0);
 //    GLKMatrix4 projection = GLKMatrix4Identity;
     
-//    GLuint modelUniformLocation = glGetUniformLocation(program, "model");
-//    glUniformMatrix4fv(modelUniformLocation, 1, GL_FALSE, model.m);
+    GLuint modelUniformLocation = glGetUniformLocation(program, "model");
+    glUniformMatrix4fv(modelUniformLocation, 1, GL_FALSE, model.m);
     
     GLuint viewUniformLocation = glGetUniformLocation(program, "view");
     glUniformMatrix4fv(viewUniformLocation, 1, GL_FALSE, view.m);
@@ -245,26 +245,26 @@ typedef struct {
     glUniformMatrix4fv(projectionUniformLocation, 1, GL_FALSE, projection.m);
     
     // render boxes
-    glBindVertexArray(vertexArray);
-    for (unsigned int i = 0; i < 10; i++)
-    {
-        // calculate the model matrix for each object and pass it to shader before drawing
-        //GLKMatrix4 model = GLKMatrix4Identity;
-        
-        GLKMatrix4 translation = GLKMatrix4MakeTranslation(self.cubePos[i].x, self.cubePos[i].y, self.cubePos[i].z);
-        float angle = 40.0f * i+1;
-        GLKMatrix4 rotation = GLKMatrix4MakeRotation(changeValue * GLKMathDegreesToRadians(angle),0.5,1.0,0.0);
-        
-        GLKMatrix4 model = GLKMatrix4Multiply(translation,rotation);
-        
-        GLuint modelUniformLocation = glGetUniformLocation(program, "model");
-        glUniformMatrix4fv(modelUniformLocation, 1, GL_FALSE, model.m);
-
-        glDrawArrays(GL_TRIANGLES, 0, 36);
-    }
+//    glBindVertexArray(vertexArray);
+//    for (unsigned int i = 0; i < 10; i++)
+//    {
+//        // calculate the model matrix for each object and pass it to shader before drawing
+//        //GLKMatrix4 model = GLKMatrix4Identity;
+//
+//        GLKMatrix4 translation = GLKMatrix4MakeTranslation(self.cubePos[i].x, self.cubePos[i].y, self.cubePos[i].z);
+//        float angle = 40.0f * i+1;
+//        GLKMatrix4 rotation = GLKMatrix4MakeRotation(changeValue * GLKMathDegreesToRadians(angle),0.5,1.0,0.0);
+//
+//        GLKMatrix4 model = GLKMatrix4Multiply(translation,rotation);
+//
+//        GLuint modelUniformLocation = glGetUniformLocation(program, "model");
+//        glUniformMatrix4fv(modelUniformLocation, 1, GL_FALSE, model.m);
+//
+//        glDrawArrays(GL_TRIANGLES, 0, 36);
+//    }
     
     // 开始绘制
-    //glDrawArrays(GL_TRIANGLES, 0, 36);
+    glDrawArrays(GL_TRIANGLES, 0, 36);
     
     // 将绑定的渲染缓存呈现到屏幕上
     [self.context presentRenderbuffer:GL_RENDERBUFFER];
