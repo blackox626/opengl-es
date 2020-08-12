@@ -18,7 +18,6 @@ typedef struct {
 
 @interface ViewController () {
     GLfloat changeValue;
-    CFAbsoluteTime lastTime;
     GLuint texture1ID;
     GLuint texture2ID;
     
@@ -83,8 +82,6 @@ typedef struct {
 }
 
 - (void)initVertices {
-    lastTime = CFAbsoluteTimeGetCurrent();
-    
     // 创建顶点数组
     self.vertices = malloc(sizeof(SenceVertex) * 4); // 4 个顶点
     
@@ -144,9 +141,6 @@ typedef struct {
 - (void)render {
     GLuint program = self.shader.programId;
     
-    
-    CFAbsoluteTime startTime = CFAbsoluteTimeGetCurrent();
-
     changeValue += self.displayLink.timestamp - self.startTimeInterval;
 
     GLfloat elValue = sinf(changeValue);
@@ -187,9 +181,6 @@ typedef struct {
     
     // 将绑定的渲染缓存呈现到屏幕上
     [self.context presentRenderbuffer:GL_RENDERBUFFER];
-    
-    
-    lastTime = startTime;
 }
 
 // 绑定图像要输出的 layer
