@@ -210,10 +210,11 @@ typedef struct {
     GLKMatrix4 model = GLKMatrix4MakeRotation(changeValue*GLKMathDegreesToRadians(50.0),0.5,1.0,0.0);
 //    GLKMatrix4 model = GLKMatrix4Identity;
     // view
-    GLKMatrix4 view = GLKMatrix4MakeTranslation(0, 0, -5);
+    GLKMatrix4 view = GLKMatrix4MakeTranslation(0, 0, -4);
+//    GLKMatrix4 view = GLKMatrix4Identity;
     // projection
     GLKMatrix4 projection = GLKMatrix4MakePerspective(GLKMathDegreesToRadians(45.0), 2.0/3.0, 0.1, 100.0);
-        
+//    GLKMatrix4 projection = GLKMatrix4Identity;
     GLuint modelUniformLocation = glGetUniformLocation(program, "model");
     glUniformMatrix4fv(modelUniformLocation, 1, GL_FALSE, model.m);
     
