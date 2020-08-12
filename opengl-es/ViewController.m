@@ -72,8 +72,7 @@ typedef struct {
     
     self.startTimeInterval = 0;
     self.displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(render)];
-    [self.displayLink addToRunLoop:[NSRunLoop mainRunLoop]
-                           forMode:NSRunLoopCommonModes];
+    [self.displayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
 
     
 //    // 删除顶点缓存
@@ -141,7 +140,7 @@ typedef struct {
 - (void)render {
     GLuint program = self.shader.programId;
     
-    changeValue += self.displayLink.timestamp - self.startTimeInterval;
+    changeValue = self.displayLink.timestamp - self.startTimeInterval;
 
     GLfloat elValue = sinf(changeValue);
     
