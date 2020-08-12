@@ -17,7 +17,6 @@ typedef struct {
 } SenceVertex;
 
 @interface ViewController () {
-    GLfloat changeValue;
     GLuint texture1ID;
     GLuint texture2ID;
     
@@ -58,17 +57,11 @@ typedef struct {
     // 绑定纹理输出的层
     [self bindRenderLayer:layer];
     
+    glEnable(GL_DEPTH_TEST);
+    
     [self initShader];
     [self createTexture];
     [self bind];
-//    int i = 0;
-//    while (i< 1000000) {
-//        [self render];
-//        i++;
-//
-//        sleep(2);
-//    }
-    
     
     self.startTimeInterval = 0;
     self.displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(render)];
@@ -82,16 +75,60 @@ typedef struct {
 
 - (void)initVertices {
     // 创建顶点数组
-    self.vertices = malloc(sizeof(SenceVertex) * 4); // 4 个顶点
+    self.vertices = malloc(sizeof(SenceVertex) * 36);
     
-    self.vertices[0] = (SenceVertex){{-0.5, 0.5, 0}, {0, 1}}; // 左上角
-    self.vertices[1] = (SenceVertex){{-0.5, -0.5, 0}, {0, 0}}; // 左下角
-    self.vertices[2] = (SenceVertex){{0.5, 0.5, 0}, {1, 1}}; // 右上角
-    self.vertices[3] = (SenceVertex){{0.5, -0.5, 0},{1, 0}}; // 右下角
+    //后
+    self.vertices[0] = (SenceVertex){{-0.5, 0.5, -0.5}, {0, 1}}; // 左上角
+    self.vertices[1] = (SenceVertex){{-0.5, -0.5, -0.5}, {0, 0}}; // 左下角
+    self.vertices[2] = (SenceVertex){{0.5, -0.5, -0.5},{1, 0}}; // 右下角
+    self.vertices[3] = (SenceVertex){{0.5, -0.5, -0.5},{1, 0}}; // 右下角
+    self.vertices[4] = (SenceVertex){{0.5, 0.5, -0.5}, {1, 1}}; // 右上角
+    self.vertices[5] = (SenceVertex){{-0.5, 0.5, -0.5}, {0, 1}}; // 左上角
+    
+    //前
+    self.vertices[6] = (SenceVertex){{-0.5, 0.5, 0.5}, {0, 1}}; // 左上角
+    self.vertices[7] = (SenceVertex){{-0.5, -0.5, 0.5}, {0, 0}}; // 左下角
+    self.vertices[8] = (SenceVertex){{0.5, -0.5, 0.5},{1, 0}}; // 右下角
+    self.vertices[9] = (SenceVertex){{0.5, -0.5, 0.5},{1, 0}}; // 右下角
+    self.vertices[10] = (SenceVertex){{0.5, 0.5, 0.5}, {1, 1}}; // 右上角
+    self.vertices[11] = (SenceVertex){{-0.5, 0.5, 0.5}, {0, 1}}; // 左上角
+
+    //左
+    self.vertices[12] = (SenceVertex){{-0.5,0.5, 0.5}, {0, 1}}; // 左上角
+    self.vertices[13] = (SenceVertex){{-0.5,-0.5, 0.5}, {0, 0}}; // 左下角
+    self.vertices[14] = (SenceVertex){{-0.5,-0.5, -0.5},{1, 0}}; // 右下角
+    self.vertices[15] = (SenceVertex){{-0.5,-0.5, -0.5},{1, 0}}; // 右下角
+    self.vertices[16] = (SenceVertex){{-0.5,0.5, -0.5}, {1, 1}}; // 右上角
+    self.vertices[17] = (SenceVertex){{-0.5,0.5, 0.5}, {0, 1}}; // 左上角
+
+    //右
+    self.vertices[18] = (SenceVertex){{0.5,0.5, 0.5}, {0, 1}}; // 左上角
+    self.vertices[19] = (SenceVertex){{0.5,-0.5, 0.5}, {0, 0}}; // 左下角
+    self.vertices[20] = (SenceVertex){{0.5,-0.5, -0.5},{1, 0}}; // 右下角
+    self.vertices[21] = (SenceVertex){{0.5,-0.5, -0.5},{1, 0}}; // 右下角
+    self.vertices[22] = (SenceVertex){{0.5,0.5, -0.5}, {1, 1}}; // 右上角
+    self.vertices[23] = (SenceVertex){{0.5,0.5, 0.5}, {0, 1}}; // 左上角
+
+    //下
+    self.vertices[24] = (SenceVertex){{-0.5,-0.5, -0.5}, {0, 1}}; // 左上角
+    self.vertices[25] = (SenceVertex){{-0.5,-0.5, 0.5}, {0, 0}}; // 左下角
+    self.vertices[26] = (SenceVertex){{0.5,-0.5, 0.5},{1, 0}}; // 右下角
+    self.vertices[27] = (SenceVertex){{0.5,-0.5, 0.5},{1, 0}}; // 右下角
+    self.vertices[28] = (SenceVertex){{0.5,-0.5, -0.5}, {1, 1}}; // 右上角
+    self.vertices[29] = (SenceVertex){{-0.5,-0.5, -0.5}, {0, 1}}; // 左上角
+
+    //上
+    self.vertices[30] = (SenceVertex){{-0.5,0.5, -0.5}, {0, 1}}; // 左上角
+    self.vertices[31] = (SenceVertex){{-0.5,0.5, 0.5}, {0, 0}}; // 左下角
+    self.vertices[32] = (SenceVertex){{0.5,0.5, 0.5},{1, 0}}; // 右下角
+    self.vertices[33] = (SenceVertex){{0.5,0.5, 0.5},{1, 0}}; // 右下角
+    self.vertices[34] = (SenceVertex){{0.5,0.5, -0.5}, {1, 1}}; // 右上角
+    self.vertices[35] = (SenceVertex){{-0.5,0.5, -0.5}, {0, 1}}; // 左上角
+
 }
 
 - (void)initContext {
-    self.context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES3];
+    self.context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
     [EAGLContext setCurrentContext:self.context];
 }
 
@@ -125,7 +162,7 @@ typedef struct {
     
     glGenBuffers(1, &vertexBuffer);
     glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-    GLsizeiptr bufferSizeBytes = sizeof(SenceVertex) * 4;
+    GLsizeiptr bufferSizeBytes = sizeof(SenceVertex) * 36;
     glBufferData(GL_ARRAY_BUFFER, bufferSizeBytes, self.vertices, GL_STATIC_DRAW);
     
     // 设置顶点数据
@@ -138,16 +175,19 @@ typedef struct {
 }
 
 - (void)render {
+    
+    glEnable(GL_DEPTH_TEST);
+    
     GLuint program = self.shader.programId;
     
-    changeValue = self.displayLink.timestamp - self.startTimeInterval;
+    GLfloat changeValue = self.displayLink.timestamp - self.startTimeInterval;
 
     GLfloat elValue = sinf(changeValue);
     
     //当调用glClear函数，清除颜色缓冲之后，整个颜色缓冲都会被填充为glClearColor里所设置的颜色。在这里，我们将屏幕设置白色。
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
-    
+    //glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
     // 将纹理 ID 传给着色器程序
     glActiveTexture(GL_TEXTURE0);
@@ -166,23 +206,24 @@ typedef struct {
     
     
     // model
-    GLKMatrix4 rotationMatrix = GLKMatrix4MakeXRotation(GLKMathDegreesToRadians(-65.0));
+    GLKMatrix4 model = GLKMatrix4MakeRotation(changeValue*GLKMathDegreesToRadians(50.0),0.5,1.0,0.0);
+//    GLKMatrix4 model = GLKMatrix4Identity;
     // view
-    GLKMatrix4 translationMatrix = GLKMatrix4MakeTranslation(0, 0, -3);
+    GLKMatrix4 view = GLKMatrix4MakeTranslation(0, 0, -5);
     // projection
-    GLKMatrix4 perspectiveMatrix = GLKMatrix4MakePerspective(GLKMathDegreesToRadians(45.0), 2.0/3.0, 0.1, 100.0);
+    GLKMatrix4 projection = GLKMatrix4MakePerspective(GLKMathDegreesToRadians(45.0), 2.0/3.0, 0.1, 100.0);
         
     GLuint modelUniformLocation = glGetUniformLocation(program, "model");
-    glUniformMatrix4fv(modelUniformLocation, 1, GL_FALSE, rotationMatrix.m);
+    glUniformMatrix4fv(modelUniformLocation, 1, GL_FALSE, model.m);
     
     GLuint viewUniformLocation = glGetUniformLocation(program, "view");
-    glUniformMatrix4fv(viewUniformLocation, 1, GL_FALSE, translationMatrix.m);
+    glUniformMatrix4fv(viewUniformLocation, 1, GL_FALSE, view.m);
     
     GLuint projectionUniformLocation = glGetUniformLocation(program, "projection");
-    glUniformMatrix4fv(projectionUniformLocation, 1, GL_FALSE, perspectiveMatrix.m);
+    glUniformMatrix4fv(projectionUniformLocation, 1, GL_FALSE, projection.m);
     
     // 开始绘制
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    glDrawArrays(GL_TRIANGLES, 0, 36);
     
     // 将绑定的渲染缓存呈现到屏幕上
     [self.context presentRenderbuffer:GL_RENDERBUFFER];
