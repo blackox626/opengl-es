@@ -6,6 +6,9 @@
 //  Copyright © 2020 vdian. All rights reserved.
 //
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+
 #import "ViewController.h"
 #import <GLKit/GLKit.h>
 #import "Shader.h"
@@ -175,9 +178,6 @@ typedef struct {
 }
 
 - (void)render {
-    
-    glEnable(GL_DEPTH_TEST);
-    
     GLuint program = self.shader.programId;
     
     GLfloat changeValue = self.displayLink.timestamp - self.startTimeInterval;
@@ -234,18 +234,46 @@ typedef struct {
     GLuint renderBuffer; // 渲染缓存
     GLuint frameBuffer;  // 帧缓存
     
+    GLuint depthRenderBuffer;
+    
     // 绑定渲染缓存要输出的 layer
     glGenRenderbuffers(1, &renderBuffer);
     glBindRenderbuffer(GL_RENDERBUFFER, renderBuffer);
+    
+//    glRenderbufferStorage(GL_RENDERBUFFER,
+//                          GL_RGBA,
+//                          self.drawableWidth,
+//                          self.drawableHeight);
+    
+    
+    glGenRenderbuffers(1, &depthRenderBuffer);
+    glBindRenderbuffer(GL_RENDERBUFFER, depthRenderBuffer);
+//
     [self.context renderbufferStorage:GL_RENDERBUFFER fromDrawable:layer];
+//
+//    glRenderbufferStorage(GL_RENDERBUFFER,
+//                          GL_DEPTH_STENCIL,
+//                          self.drawableWidth,
+//                          self.drawableHeight);
     
     // 将渲染缓存绑定到帧缓存上
     glGenFramebuffers(1, &frameBuffer);
     glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
+    
     glFramebufferRenderbuffer(GL_FRAMEBUFFER,
                               GL_COLOR_ATTACHMENT0,
                               GL_RENDERBUFFER,
                               renderBuffer);
+    
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER,
+                              GL_DEPTH_ATTACHMENT,
+                              GL_RENDERBUFFER,
+                              depthRenderBuffer);
+    
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER,
+                              GL_STENCIL_ATTACHMENT,
+                              GL_RENDERBUFFER,
+                              depthRenderBuffer);
 }
 
 // 获取渲染缓存宽度
@@ -265,3 +293,5 @@ typedef struct {
 }
 
 @end
+
+#pragma clang diagnostic pop
