@@ -11,6 +11,7 @@
 
 #import "ViewController.h"
 #import <GLKit/GLKit.h>
+#import <OpenGLES/ES3/gl.h>
 #import "Shader.h"
 #import "TextureUtil.h"
 
@@ -24,6 +25,7 @@ typedef struct {
     GLuint texture2ID;
     
     GLuint vertexBuffer;
+    GLuint vertexArray;
     
     GLuint positionSlot;
     GLuint texture1Slot;
@@ -32,6 +34,8 @@ typedef struct {
 }
 
 @property (nonatomic, assign) SenceVertex *vertices; // 顶点数组
+@property (nonatomic, assign) GLKVector3 *cubePos;
+
 @property (nonatomic, strong) EAGLContext *context;
 @property (nonatomic,strong) Shader *shader;
 @property (nonatomic, strong) CADisplayLink *displayLink;
@@ -129,6 +133,19 @@ typedef struct {
     self.vertices[34] = (SenceVertex){{0.5,0.5, -0.5}, {1, 1}}; // 右上角
     self.vertices[35] = (SenceVertex){{-0.5,0.5, -0.5}, {0, 1}}; // 左上角
 
+    
+    self.cubePos = malloc(sizeof(GLKVector3) * 10);
+    self.cubePos[0] = (GLKVector3){0.0f,  0.0f,  0.0f};
+    self.cubePos[1] = (GLKVector3){2.0f,  5.0f, -15.0f};
+    self.cubePos[2] = (GLKVector3){-1.5f, -2.2f, -2.5f};
+    self.cubePos[3] = (GLKVector3){-3.8f, -2.0f, -12.3f};
+    self.cubePos[4] = (GLKVector3){ 2.4f, -0.4f, -3.5f};
+    self.cubePos[5] = (GLKVector3){-1.7f,  3.0f, -7.5f};
+    self.cubePos[6] = (GLKVector3){1.3f, -2.0f, -2.5f};
+    self.cubePos[7] = (GLKVector3){1.5f,  2.0f, -2.5f};
+    self.cubePos[8] = (GLKVector3){1.5f,  0.2f, -1.5f};
+    self.cubePos[9] = (GLKVector3){-1.3f,  1.0f, -1.5f};
+    
 }
 
 - (void)initContext {
@@ -162,9 +179,14 @@ typedef struct {
     texture2Slot = glGetUniformLocation(program, "Texture2");
     textureCoordsSlot = glGetAttribLocation(program, "TextureCoords");
     
-    // 创建顶点缓存
+    // 创建顶点数组 VAO
+    glGenVertexArrays(1,&vertexArray);
     
+    // 创建顶点缓存 VBO
     glGenBuffers(1, &vertexBuffer);
+    
+    glBindVertexArray(vertexArray);
+    
     glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
     GLsizeiptr bufferSizeBytes = sizeof(SenceVertex) * 36;
     glBufferData(GL_ARRAY_BUFFER, bufferSizeBytes, self.vertices, GL_STATIC_DRAW);
@@ -204,7 +226,7 @@ typedef struct {
     GLfloat changeValue = self.displayLink.timestamp - self.startTimeInterval;
     
     // model
-    GLKMatrix4 model = GLKMatrix4MakeRotation(changeValue*GLKMathDegreesToRadians(50.0),0.5,1.0,0.0);
+//    GLKMatrix4 model = GLKMatrix4MakeRotation(changeValue*GLKMathDegreesToRadians(50.0),0.5,1.0,0.0);
 //    GLKMatrix4 model = GLKMatrix4Identity;
     // view
     GLKMatrix4 view = GLKMatrix4MakeTranslation(0, 0, -4);
@@ -212,8 +234,9 @@ typedef struct {
     // projection
     GLKMatrix4 projection = GLKMatrix4MakePerspective(GLKMathDegreesToRadians(45.0), 2.0/3.0, 0.1, 100.0);
 //    GLKMatrix4 projection = GLKMatrix4Identity;
-    GLuint modelUniformLocation = glGetUniformLocation(program, "model");
-    glUniformMatrix4fv(modelUniformLocation, 1, GL_FALSE, model.m);
+    
+//    GLuint modelUniformLocation = glGetUniformLocation(program, "model");
+//    glUniformMatrix4fv(modelUniformLocation, 1, GL_FALSE, model.m);
     
     GLuint viewUniformLocation = glGetUniformLocation(program, "view");
     glUniformMatrix4fv(viewUniformLocation, 1, GL_FALSE, view.m);
@@ -221,8 +244,27 @@ typedef struct {
     GLuint projectionUniformLocation = glGetUniformLocation(program, "projection");
     glUniformMatrix4fv(projectionUniformLocation, 1, GL_FALSE, projection.m);
     
+    // render boxes
+    glBindVertexArray(vertexArray);
+    for (unsigned int i = 0; i < 10; i++)
+    {
+        // calculate the model matrix for each object and pass it to shader before drawing
+        //GLKMatrix4 model = GLKMatrix4Identity;
+        
+        GLKMatrix4 translation = GLKMatrix4MakeTranslation(self.cubePos[i].x, self.cubePos[i].y, self.cubePos[i].z);
+        float angle = 40.0f * i+1;
+        GLKMatrix4 rotation = GLKMatrix4MakeRotation(changeValue * GLKMathDegreesToRadians(angle),0.5,1.0,0.0);
+        
+        GLKMatrix4 model = GLKMatrix4Multiply(translation,rotation);
+        
+        GLuint modelUniformLocation = glGetUniformLocation(program, "model");
+        glUniformMatrix4fv(modelUniformLocation, 1, GL_FALSE, model.m);
+
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+    }
+    
     // 开始绘制
-    glDrawArrays(GL_TRIANGLES, 0, 36);
+    //glDrawArrays(GL_TRIANGLES, 0, 36);
     
     // 将绑定的渲染缓存呈现到屏幕上
     [self.context presentRenderbuffer:GL_RENDERBUFFER];
