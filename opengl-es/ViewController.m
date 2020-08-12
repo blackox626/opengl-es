@@ -61,6 +61,7 @@ typedef struct {
     [self bindRenderLayer:layer];
     
     glEnable(GL_DEPTH_TEST);
+    //glDepthFunc(GL_LESS);
     
     [self initShader];
     [self createTexture];
@@ -240,21 +241,18 @@ typedef struct {
     glGenRenderbuffers(1, &renderBuffer);
     glBindRenderbuffer(GL_RENDERBUFFER, renderBuffer);
     
-//    glRenderbufferStorage(GL_RENDERBUFFER,
-//                          GL_RGBA,
-//                          self.drawableWidth,
-//                          self.drawableHeight);
+    [self.context renderbufferStorage:GL_RENDERBUFFER fromDrawable:layer];
     
+    // Setup depth render buffer
+    int width, height;
+    glGetRenderbufferParameteriv(GL_RENDERBUFFER, GL_RENDERBUFFER_WIDTH, &width);
+    glGetRenderbufferParameteriv(GL_RENDERBUFFER, GL_RENDERBUFFER_HEIGHT, &height);
     
+    // Create a depth buffer that has the same size as the color buffer.
     glGenRenderbuffers(1, &depthRenderBuffer);
     glBindRenderbuffer(GL_RENDERBUFFER, depthRenderBuffer);
-//
-    [self.context renderbufferStorage:GL_RENDERBUFFER fromDrawable:layer];
-//
-//    glRenderbufferStorage(GL_RENDERBUFFER,
-//                          GL_DEPTH_STENCIL,
-//                          self.drawableWidth,
-//                          self.drawableHeight);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, width, height);
+    
     
     // 将渲染缓存绑定到帧缓存上
     glGenFramebuffers(1, &frameBuffer);
@@ -270,10 +268,13 @@ typedef struct {
                               GL_RENDERBUFFER,
                               depthRenderBuffer);
     
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER,
-                              GL_STENCIL_ATTACHMENT,
-                              GL_RENDERBUFFER,
-                              depthRenderBuffer);
+    glBindRenderbuffer(GL_RENDERBUFFER, renderBuffer);
+    
+//
+//    glFramebufferRenderbuffer(GL_FRAMEBUFFER,
+//                              GL_STENCIL_ATTACHMENT,
+//                              GL_RENDERBUFFER,
+//                              depthRenderBuffer);
 }
 
 // 获取渲染缓存宽度
