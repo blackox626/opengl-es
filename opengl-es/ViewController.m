@@ -181,10 +181,6 @@ typedef struct {
 - (void)render {
     GLuint program = self.shader.programId;
     
-    GLfloat changeValue = self.displayLink.timestamp - self.startTimeInterval;
-
-    GLfloat elValue = sinf(changeValue);
-    
     //当调用glClear函数，清除颜色缓冲之后，整个颜色缓冲都会被填充为glClearColor里所设置的颜色。在这里，我们将屏幕设置白色。
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
     //glClear(GL_COLOR_BUFFER_BIT);
@@ -205,6 +201,7 @@ typedef struct {
 //    transformMatrix = GLKMatrix4Identity;
 //    transformMatrix = GLKMatrix4MakeTranslation(1.0, 0.0, 0.0);
     
+    GLfloat changeValue = self.displayLink.timestamp - self.startTimeInterval;
     
     // model
     GLKMatrix4 model = GLKMatrix4MakeRotation(changeValue*GLKMathDegreesToRadians(50.0),0.5,1.0,0.0);
