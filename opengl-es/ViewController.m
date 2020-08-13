@@ -229,8 +229,15 @@ typedef struct {
 //    GLKMatrix4 model = GLKMatrix4MakeRotation(changeValue*GLKMathDegreesToRadians(50.0),0.5,1.0,0.0);
 //    GLKMatrix4 model = GLKMatrix4Identity;
     // view
-    GLKMatrix4 view = GLKMatrix4MakeTranslation(0, 0, -4);
+    //GLKMatrix4 view = GLKMatrix4MakeTranslation(0, 0, -4);
 //    GLKMatrix4 view = GLKMatrix4Identity;
+    
+    float radius = 10.0f;
+    float camX = sin(changeValue) * radius;
+    float camZ = cos(changeValue) * radius;
+    
+    GLKMatrix4 view = GLKMatrix4MakeLookAt(camX, 3, camZ, 0, 0, 0, 0, 1, 0);
+    
     // projection
     GLKMatrix4 projection = GLKMatrix4MakePerspective(GLKMathDegreesToRadians(45.0), 2.0/3.0, 0.1, 100.0);
 //    GLKMatrix4 projection = GLKMatrix4Identity;
@@ -254,7 +261,7 @@ typedef struct {
         GLKMatrix4 translation = GLKMatrix4MakeTranslation(self.cubePos[i].x, self.cubePos[i].y, self.cubePos[i].z);
         float angle = 40.0f * i+1;
         GLKMatrix4 rotation = GLKMatrix4MakeRotation(changeValue * GLKMathDegreesToRadians(angle),0.5,1.0,0.0);
-        
+
         GLKMatrix4 model = GLKMatrix4Multiply(translation,rotation);
         
         GLuint modelUniformLocation = glGetUniformLocation(program, "model");

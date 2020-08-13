@@ -6,11 +6,6 @@
   Copyright © 2020 vdian. All rights reserved.
 */
 
-/*
- 片元着色器 是一个处理片元值及其相关联数据的可编程单元，片元着色器可执行纹理的访问、颜色的汇总、雾化等操作，每片元执行一次。
- 计算像素最后的颜色输出
-*/
-
 precision mediump float;
 
 uniform sampler2D Texture1;
