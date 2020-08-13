@@ -31,6 +31,12 @@ typedef struct {
     GLuint texture1Slot;
     GLuint texture2Slot;
     GLuint textureCoordsSlot;
+    
+    GLKVector3 pos;
+    GLKVector3 front;
+    GLKVector3 up;
+    
+    float cameraSpeed;
 }
 
 @property (nonatomic, assign) SenceVertex *vertices; // 顶点数组
@@ -48,6 +54,10 @@ typedef struct {
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.view.backgroundColor = [UIColor whiteColor];
+    
+    cameraSpeed = 0.05f;
+    
+    [self initDirectionButton];
     
     [self initVertices];
     [self initContext];
@@ -71,14 +81,66 @@ typedef struct {
     [self createTexture];
     [self bind];
     
-    self.startTimeInterval = 0;
-    self.displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(render)];
-    [self.displayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
+//    self.startTimeInterval = 0;
+//    self.displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(render)];
+//    [self.displayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
 
+    [self render];
     
 //    // 删除顶点缓存
 //    glDeleteBuffers(1, &vertexBuffer);
 //    vertexBuffer = 0;
+}
+
+- (void)front:(id)object {
+    pos = GLKVector3Add(pos, GLKVector3MultiplyScalar(front, cameraSpeed));
+    [self render];
+}
+
+- (void)back:(id)object {
+    pos = GLKVector3Subtract(pos, GLKVector3MultiplyScalar(front, cameraSpeed));
+    [self render];
+}
+
+- (void)left:(id)object {
+    pos = GLKVector3Subtract(pos, GLKVector3MultiplyScalar(GLKVector3Normalize(GLKVector3CrossProduct(front, up)),cameraSpeed));
+    [self render];
+}
+
+- (void)right:(id)object {
+    pos = GLKVector3Add(pos, GLKVector3MultiplyScalar(GLKVector3Normalize(GLKVector3CrossProduct(front, up)),cameraSpeed));
+    [self render];
+}
+
+
+- (void)initDirectionButton {
+    UIButton *front = [UIButton buttonWithType:UIButtonTypeCustom];
+    front.backgroundColor = [UIColor redColor];
+    [front setTitle:@"前" forState:UIControlStateNormal];
+    front.frame = CGRectMake(0, 40, 100, 20);
+    [front addTarget:self action:@selector(front:) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:front];
+    
+    UIButton *back = [UIButton buttonWithType:UIButtonTypeCustom];
+    back.backgroundColor = [UIColor redColor];
+    [back setTitle:@"后" forState:UIControlStateNormal];
+    back.frame = CGRectMake(120, 40, 100, 20);
+    [back addTarget:self action:@selector(back:) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:back];
+    
+    UIButton *left = [UIButton buttonWithType:UIButtonTypeCustom];
+    left.backgroundColor = [UIColor redColor];
+    [left setTitle:@"左" forState:UIControlStateNormal];
+    left.frame = CGRectMake(0, 70, 100, 20);
+    [left addTarget:self action:@selector(left:) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:left];
+    
+    UIButton *right = [UIButton buttonWithType:UIButtonTypeCustom];
+    right.backgroundColor = [UIColor redColor];
+    [right setTitle:@"右" forState:UIControlStateNormal];
+    right.frame = CGRectMake(120, 70, 100, 20);
+    [right addTarget:self action:@selector(right:) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:right];
 }
 
 - (void)initVertices {
@@ -146,6 +208,9 @@ typedef struct {
     self.cubePos[8] = (GLKVector3){1.5f,  0.2f, -1.5f};
     self.cubePos[9] = (GLKVector3){-1.3f,  1.0f, -1.5f};
     
+    pos = (GLKVector3){0.0f,  0.0f,  3.0f};
+    front = (GLKVector3){0.0f,  0.0f,  -1.0f};
+    up = (GLKVector3){0.0f,  1.0f,  0.0f};
 }
 
 - (void)initContext {
@@ -229,14 +294,18 @@ typedef struct {
 //    GLKMatrix4 model = GLKMatrix4MakeRotation(changeValue*GLKMathDegreesToRadians(50.0),0.5,1.0,0.0);
 //    GLKMatrix4 model = GLKMatrix4Identity;
     // view
-    //GLKMatrix4 view = GLKMatrix4MakeTranslation(0, 0, -4);
+//    GLKMatrix4 view = GLKMatrix4MakeTranslation(0, 0, -4);
 //    GLKMatrix4 view = GLKMatrix4Identity;
     
-    float radius = 10.0f;
-    float camX = sin(changeValue) * radius;
-    float camZ = cos(changeValue) * radius;
+//    float radius = 10.0f;
+//    float camX = sin(changeValue) * radius;
+//    float camZ = cos(changeValue) * radius;
     
-    GLKMatrix4 view = GLKMatrix4MakeLookAt(camX, 3, camZ, 0, 0, 0, 0, 1, 0);
+    GLKVector3 center = GLKVector3Add(pos, front);
+    
+    GLKMatrix4 view = GLKMatrix4MakeLookAt(pos.x, pos.y, pos.z, center.x, center.y, center.z, up.x, up.y, up.z);
+    
+    
     
     // projection
     GLKMatrix4 projection = GLKMatrix4MakePerspective(GLKMathDegreesToRadians(45.0), 2.0/3.0, 0.1, 100.0);
