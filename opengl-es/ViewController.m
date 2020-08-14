@@ -55,7 +55,7 @@ typedef struct {
     [super viewDidLoad];
     self.view.backgroundColor = [UIColor whiteColor];
     
-    cameraSpeed = 0.05f;
+    cameraSpeed = 0.1f;
     
     [self initDirectionButton];
     
