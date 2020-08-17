@@ -189,7 +189,7 @@ typedef struct {
     GLuint lightColorSlot = glGetUniformLocation(program, "lightColor");
     
     GLKVector3 objectColor = GLKVector3Make(1.0f, 0.5f, 0.31f);
-    GLKVector3 lightColor = GLKVector3Make(1.0f, 0.5f, 0.31f);
+    GLKVector3 lightColor = GLKVector3Make(1.0f, 1.0f, 1.0f);
     
     glUniform3fv(objectColorSlot, 1, objectColor.v);
     glUniform3fv(lightColorSlot, 1, lightColor.v);
