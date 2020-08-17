@@ -18,9 +18,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (Shader *)init:(NSString *)shaderName;
 
+- (Shader *)init:(NSString *)vname fname:(NSString *)fname;
+
 - (void)use;
 
-- (void) setInt:(NSString *)name value:(int)value;
+- (void)setInt:(NSString *)name value:(int)value;
 
 @end
 

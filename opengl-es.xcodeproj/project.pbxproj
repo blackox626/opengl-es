@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		BFA85F5724EA9C1700D9BF2D /* light.fsh in Resources */ = {isa = PBXBuildFile; fileRef = BFA85F5624EA9C1700D9BF2D /* light.fsh */; };
 		BFBC580624E28757004678F0 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = BFBC580524E28757004678F0 /* AppDelegate.m */; };
 		BFBC580924E28757004678F0 /* SceneDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = BFBC580824E28757004678F0 /* SceneDelegate.m */; };
 		BFBC580C24E28757004678F0 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BFBC580B24E28757004678F0 /* ViewController.m */; };
@@ -23,6 +24,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		BFA85F5624EA9C1700D9BF2D /* light.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = light.fsh; sourceTree = "<group>"; };
 		BFBC580124E28757004678F0 /* opengl-es.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "opengl-es.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		BFBC580424E28757004678F0 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		BFBC580524E28757004678F0 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -108,6 +110,7 @@
 			children = (
 				BFBC581D24E28C44004678F0 /* glsl.vsh */,
 				BFBC581F24E28C58004678F0 /* glsl.fsh */,
+				BFA85F5624EA9C1700D9BF2D /* light.fsh */,
 			);
 			path = glsl;
 			sourceTree = "<group>";
@@ -187,6 +190,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BFA85F5724EA9C1700D9BF2D /* light.fsh in Resources */,
 				BFBC581424E2875A004678F0 /* LaunchScreen.storyboard in Resources */,
 				BFBC582224E28EF2004678F0 /* sample.png in Resources */,
 				BFBC581E24E28C44004678F0 /* glsl.vsh in Resources */,

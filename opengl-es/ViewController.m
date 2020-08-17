@@ -27,23 +27,19 @@ typedef struct {
     GLuint vertexBuffer;
     GLuint vertexArray;
     
+    GLuint lightVertexArray;
+    
     GLuint positionSlot;
     GLuint texture1Slot;
     GLuint texture2Slot;
     GLuint textureCoordsSlot;
-    
-    GLKVector3 pos;
-    GLKVector3 front;
-    GLKVector3 up;
-    
-    float cameraSpeed;
 }
 
 @property (nonatomic, assign) SenceVertex *vertices; // 顶点数组
-@property (nonatomic, assign) GLKVector3 *cubePos;
 
 @property (nonatomic, strong) EAGLContext *context;
 @property (nonatomic,strong) Shader *shader;
+@property (nonatomic,strong) Shader *lightShader;
 @property (nonatomic, strong) CADisplayLink *displayLink;
 @property (nonatomic, assign) NSTimeInterval startTimeInterval; // 开始的时间戳
 
@@ -54,10 +50,6 @@ typedef struct {
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.view.backgroundColor = [UIColor whiteColor];
-    
-    cameraSpeed = 0.1f;
-    
-    [self initDirectionButton];
     
     [self initVertices];
     [self initContext];
@@ -78,7 +70,7 @@ typedef struct {
     //glDepthFunc(GL_LESS);
     
     [self initShader];
-    [self createTexture];
+    //[self createTexture];
     [self bind];
     
 //    self.startTimeInterval = 0;
@@ -90,57 +82,6 @@ typedef struct {
 //    // 删除顶点缓存
 //    glDeleteBuffers(1, &vertexBuffer);
 //    vertexBuffer = 0;
-}
-
-- (void)front:(id)object {
-    pos = GLKVector3Add(pos, GLKVector3MultiplyScalar(front, cameraSpeed));
-    [self render];
-}
-
-- (void)back:(id)object {
-    pos = GLKVector3Subtract(pos, GLKVector3MultiplyScalar(front, cameraSpeed));
-    [self render];
-}
-
-- (void)left:(id)object {
-    pos = GLKVector3Subtract(pos, GLKVector3MultiplyScalar(GLKVector3Normalize(GLKVector3CrossProduct(front, up)),cameraSpeed));
-    [self render];
-}
-
-- (void)right:(id)object {
-    pos = GLKVector3Add(pos, GLKVector3MultiplyScalar(GLKVector3Normalize(GLKVector3CrossProduct(front, up)),cameraSpeed));
-    [self render];
-}
-
-
-- (void)initDirectionButton {
-    UIButton *front = [UIButton buttonWithType:UIButtonTypeCustom];
-    front.backgroundColor = [UIColor redColor];
-    [front setTitle:@"前" forState:UIControlStateNormal];
-    front.frame = CGRectMake(0, 40, 100, 20);
-    [front addTarget:self action:@selector(front:) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:front];
-    
-    UIButton *back = [UIButton buttonWithType:UIButtonTypeCustom];
-    back.backgroundColor = [UIColor redColor];
-    [back setTitle:@"后" forState:UIControlStateNormal];
-    back.frame = CGRectMake(120, 40, 100, 20);
-    [back addTarget:self action:@selector(back:) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:back];
-    
-    UIButton *left = [UIButton buttonWithType:UIButtonTypeCustom];
-    left.backgroundColor = [UIColor redColor];
-    [left setTitle:@"左" forState:UIControlStateNormal];
-    left.frame = CGRectMake(0, 70, 100, 20);
-    [left addTarget:self action:@selector(left:) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:left];
-    
-    UIButton *right = [UIButton buttonWithType:UIButtonTypeCustom];
-    right.backgroundColor = [UIColor redColor];
-    [right setTitle:@"右" forState:UIControlStateNormal];
-    right.frame = CGRectMake(120, 70, 100, 20);
-    [right addTarget:self action:@selector(right:) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:right];
 }
 
 - (void)initVertices {
@@ -196,21 +137,21 @@ typedef struct {
     self.vertices[35] = (SenceVertex){{-0.5,0.5, -0.5}, {0, 1}}; // 左上角
 
     
-    self.cubePos = malloc(sizeof(GLKVector3) * 10);
-    self.cubePos[0] = (GLKVector3){0.0f,  0.0f,  0.0f};
-    self.cubePos[1] = (GLKVector3){2.0f,  5.0f, -15.0f};
-    self.cubePos[2] = (GLKVector3){-1.5f, -2.2f, -2.5f};
-    self.cubePos[3] = (GLKVector3){-3.8f, -2.0f, -12.3f};
-    self.cubePos[4] = (GLKVector3){ 2.4f, -0.4f, -3.5f};
-    self.cubePos[5] = (GLKVector3){-1.7f,  3.0f, -7.5f};
-    self.cubePos[6] = (GLKVector3){1.3f, -2.0f, -2.5f};
-    self.cubePos[7] = (GLKVector3){1.5f,  2.0f, -2.5f};
-    self.cubePos[8] = (GLKVector3){1.5f,  0.2f, -1.5f};
-    self.cubePos[9] = (GLKVector3){-1.3f,  1.0f, -1.5f};
-    
-    pos = (GLKVector3){0.0f,  0.0f,  3.0f};
-    front = (GLKVector3){0.0f,  0.0f,  -1.0f};
-    up = (GLKVector3){0.0f,  1.0f,  0.0f};
+//    self.cubePos = malloc(sizeof(GLKVector3) * 10);
+//    self.cubePos[0] = (GLKVector3){0.0f,  0.0f,  0.0f};
+//    self.cubePos[1] = (GLKVector3){2.0f,  5.0f, -15.0f};
+//    self.cubePos[2] = (GLKVector3){-1.5f, -2.2f, -2.5f};
+//    self.cubePos[3] = (GLKVector3){-3.8f, -2.0f, -12.3f};
+//    self.cubePos[4] = (GLKVector3){ 2.4f, -0.4f, -3.5f};
+//    self.cubePos[5] = (GLKVector3){-1.7f,  3.0f, -7.5f};
+//    self.cubePos[6] = (GLKVector3){1.3f, -2.0f, -2.5f};
+//    self.cubePos[7] = (GLKVector3){1.5f,  2.0f, -2.5f};
+//    self.cubePos[8] = (GLKVector3){1.5f,  0.2f, -1.5f};
+//    self.cubePos[9] = (GLKVector3){-1.3f,  1.0f, -1.5f};
+//
+//    pos = (GLKVector3){0.0f,  0.0f,  3.0f};
+//    front = (GLKVector3){0.0f,  0.0f,  -1.0f};
+//    up = (GLKVector3){0.0f,  1.0f,  0.0f};
 }
 
 - (void)initContext {
@@ -223,10 +164,8 @@ typedef struct {
     glViewport(0, 0, self.drawableWidth, self.drawableHeight);
     
     // 编译链接 shader
-    Shader *shader = [[Shader alloc] init:@"glsl"];
-    [shader use];
-    
-    self.shader = shader;
+    self.shader = [[Shader alloc] init:@"glsl"];
+    self.lightShader = [[Shader alloc ] init:@"glsl" fname:@"light"];
 }
 
 - (void)createTexture {
@@ -236,13 +175,25 @@ typedef struct {
 }
 
 - (void)bind {
+    [self.shader use];
+    
     GLuint program = self.shader.programId;
     
     // 获取 shader 中的参数，然后传数据进去
     positionSlot = glGetAttribLocation(program, "Position");
-    texture1Slot = glGetUniformLocation(program, "Texture1");  // 注意 Uniform 类型的获取方式
-    texture2Slot = glGetUniformLocation(program, "Texture2");
-    textureCoordsSlot = glGetAttribLocation(program, "TextureCoords");
+//    texture1Slot = glGetUniformLocation(program, "Texture1");  // 注意 Uniform 类型的获取方式
+//    texture2Slot = glGetUniformLocation(program, "Texture2");
+//    textureCoordsSlot = glGetAttribLocation(program, "TextureCoords");
+    
+    GLuint objectColorSlot = glGetUniformLocation(program, "objectColor");
+    GLuint lightColorSlot = glGetUniformLocation(program, "lightColor");
+    
+    GLKVector3 objectColor = GLKVector3Make(1.0f, 0.5f, 0.31f);
+    GLKVector3 lightColor = GLKVector3Make(1.0f, 0.5f, 0.31f);
+    
+    glUniform3fv(objectColorSlot, 1, objectColor.v);
+    glUniform3fv(lightColorSlot, 1, lightColor.v);
+    
     
     // 创建顶点数组 VAO
     glGenVertexArrays(1,&vertexArray);
@@ -252,6 +203,7 @@ typedef struct {
     
     glBindVertexArray(vertexArray);
     
+    
     glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
     GLsizeiptr bufferSizeBytes = sizeof(SenceVertex) * 36;
     glBufferData(GL_ARRAY_BUFFER, bufferSizeBytes, self.vertices, GL_STATIC_DRAW);
@@ -259,13 +211,29 @@ typedef struct {
     // 设置顶点数据
     glEnableVertexAttribArray(positionSlot);
     glVertexAttribPointer(positionSlot, 3, GL_FLOAT, GL_FALSE, sizeof(SenceVertex), NULL + offsetof(SenceVertex, positionCoord));
+        
+    glGenVertexArrays(1,&lightVertexArray);
+    glBindVertexArray(lightVertexArray);
+    glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+    
+    
+    [self.lightShader use];
+    
+    GLuint lightprogram = self.lightShader.programId;
+    
+    // 获取 shader 中的参数，然后传数据进去
+    GLuint lightpositionSlot = glGetAttribLocation(lightprogram, "Position");
+    // 设置顶点数据
+    glEnableVertexAttribArray(lightpositionSlot);
+    glVertexAttribPointer(lightpositionSlot, 3, GL_FLOAT, GL_FALSE, sizeof(SenceVertex), NULL + offsetof(SenceVertex, positionCoord));
     
     // 设置纹理数据
-    glEnableVertexAttribArray(textureCoordsSlot);
-    glVertexAttribPointer(textureCoordsSlot, 2, GL_FLOAT, GL_FALSE, sizeof(SenceVertex), NULL + offsetof(SenceVertex, textureCoord));
+//    glEnableVertexAttribArray(textureCoordsSlot);
+//    glVertexAttribPointer(textureCoordsSlot, 2, GL_FLOAT, GL_FALSE, sizeof(SenceVertex), NULL + offsetof(SenceVertex, textureCoord));
 }
 
 - (void)render {
+    [self.shader use];
     GLuint program = self.shader.programId;
     
     //当调用glClear函数，清除颜色缓冲之后，整个颜色缓冲都会被填充为glClearColor里所设置的颜色。在这里，我们将屏幕设置白色。
@@ -273,14 +241,14 @@ typedef struct {
     //glClear(GL_COLOR_BUFFER_BIT);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
-    // 将纹理 ID 传给着色器程序
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, texture1ID);
-    glUniform1i(texture1Slot, 0);  // 将 textureSlot 赋值为 0，而 0 与 GL_TEXTURE0 对应，这里如果写 1，上面也要改成 GL_TEXTURE1
-    
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, texture2ID);
-    glUniform1i(texture2Slot, 1);  // 将 textureSlot 赋值为 0，而 0 与 GL_TEXTURE0 对应，这里如果写 1，上面也要改成 GL_TEXTURE1
+//    // 将纹理 ID 传给着色器程序
+//    glActiveTexture(GL_TEXTURE0);
+//    glBindTexture(GL_TEXTURE_2D, texture1ID);
+//    glUniform1i(texture1Slot, 0);  // 将 textureSlot 赋值为 0，而 0 与 GL_TEXTURE0 对应，这里如果写 1，上面也要改成 GL_TEXTURE1
+//
+//    glActiveTexture(GL_TEXTURE1);
+//    glBindTexture(GL_TEXTURE_2D, texture2ID);
+//    glUniform1i(texture2Slot, 1);  // 将 textureSlot 赋值为 0，而 0 与 GL_TEXTURE0 对应，这里如果写 1，上面也要改成 GL_TEXTURE1
     
     
 //    GLKMatrix4 transformMatrix;
@@ -297,16 +265,12 @@ typedef struct {
 //    GLKMatrix4 view = GLKMatrix4MakeTranslation(0, 0, -4);
 //    GLKMatrix4 view = GLKMatrix4Identity;
     
-//    float radius = 10.0f;
-//    float camX = sin(changeValue) * radius;
-//    float camZ = cos(changeValue) * radius;
-    
-    GLKVector3 center = GLKVector3Add(pos, front);
-    
-    GLKMatrix4 view = GLKMatrix4MakeLookAt(pos.x, pos.y, pos.z, center.x, center.y, center.z, up.x, up.y, up.z);
-    
-    
-    
+
+//    GLKVector3 center = GLKVector3Add(pos, front);
+//
+    GLKMatrix4 view = GLKMatrix4MakeLookAt(2, 1, 5, 0, 0, 0, 0, 1, 0);
+
+
     // projection
     GLKMatrix4 projection = GLKMatrix4MakePerspective(GLKMathDegreesToRadians(45.0), 2.0/3.0, 0.1, 100.0);
 //    GLKMatrix4 projection = GLKMatrix4Identity;
@@ -320,27 +284,39 @@ typedef struct {
     GLuint projectionUniformLocation = glGetUniformLocation(program, "projection");
     glUniformMatrix4fv(projectionUniformLocation, 1, GL_FALSE, projection.m);
     
-    // render boxes
-    glBindVertexArray(vertexArray);
-    for (unsigned int i = 0; i < 10; i++)
-    {
-        // calculate the model matrix for each object and pass it to shader before drawing
-        //GLKMatrix4 model = GLKMatrix4Identity;
-        
-        GLKMatrix4 translation = GLKMatrix4MakeTranslation(self.cubePos[i].x, self.cubePos[i].y, self.cubePos[i].z);
-        float angle = 40.0f * i+1;
-        GLKMatrix4 rotation = GLKMatrix4MakeRotation(changeValue * GLKMathDegreesToRadians(angle),0.5,1.0,0.0);
-
-        GLKMatrix4 model = GLKMatrix4Multiply(translation,rotation);
-        
-        GLuint modelUniformLocation = glGetUniformLocation(program, "model");
-        glUniformMatrix4fv(modelUniformLocation, 1, GL_FALSE, model.m);
-
-        glDrawArrays(GL_TRIANGLES, 0, 36);
-    }
+    GLKMatrix4 model = GLKMatrix4Identity;
     
+    GLuint modelUniformLocation = glGetUniformLocation(program, "model");
+    glUniformMatrix4fv(modelUniformLocation, 1, GL_FALSE, model.m);
+    
+    
+    glBindVertexArray(vertexArray);
     // 开始绘制
-    //glDrawArrays(GL_TRIANGLES, 0, 36);
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+    
+    
+    [self.lightShader use];
+    
+    GLuint lightprogram = self.lightShader.programId;
+    
+    GLuint lightviewUniformLocation = glGetUniformLocation(lightprogram, "view");
+    glUniformMatrix4fv(lightviewUniformLocation, 1, GL_FALSE, view.m);
+    
+    GLuint lightprojectionUniformLocation = glGetUniformLocation(lightprogram, "projection");
+    glUniformMatrix4fv(lightprojectionUniformLocation, 1, GL_FALSE, projection.m);
+    
+    GLKMatrix4 translation = GLKMatrix4MakeTranslation(1.2, 1.0, 2.0);
+    
+    GLKMatrix4 scale = GLKMatrix4MakeScale(0.2, 0.2, 0.2);
+
+    GLKMatrix4 lightModel = GLKMatrix4Multiply(translation,scale);
+    
+    GLuint lightmodelUniformLocation = glGetUniformLocation(lightprogram, "model");
+    glUniformMatrix4fv(lightmodelUniformLocation, 1, GL_FALSE, lightModel.m);
+    
+    glBindVertexArray(lightVertexArray);
+    // 开始绘制
+    glDrawArrays(GL_TRIANGLES, 0, 36);
     
     // 将绑定的渲染缓存呈现到屏幕上
     [self.context presentRenderbuffer:GL_RENDERBUFFER];

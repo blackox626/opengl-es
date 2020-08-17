@@ -11,12 +11,16 @@
 @implementation Shader
 
 - (Shader *)init:(NSString *)shaderName {
+    return [self init:shaderName fname:shaderName];
+}
+
+- (Shader *)init:(NSString *)vname fname:(NSString *)fname {
 
     self = [super init];
     if (self) {
         // 编译两个着色器
-        GLuint vertexShader = [self compileShaderWithName:shaderName type:GL_VERTEX_SHADER];
-        GLuint fragmentShader = [self compileShaderWithName:shaderName type:GL_FRAGMENT_SHADER];
+        GLuint vertexShader = [self compileShaderWithName:vname type:GL_VERTEX_SHADER];
+        GLuint fragmentShader = [self compileShaderWithName:fname type:GL_FRAGMENT_SHADER];
         
         // 挂载 shader 到 program 上
         GLuint program = glCreateProgram();
